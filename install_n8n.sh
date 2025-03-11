@@ -118,7 +118,14 @@ EOF
 # Tạo file Caddyfile
 cat << EOF > $N8N_DIR/Caddyfile
 ${DOMAIN} {
-    reverse_proxy n8n:5678
+    reverse_proxy n8n:5678 {
+        header_up X-Forwarded-Proto {scheme}
+    }
+}
+
+video.${DOMAIN} {
+    root * /srv/data
+    file_server browse
 }
 EOF
 
