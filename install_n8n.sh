@@ -52,16 +52,16 @@ version: "3"
 services:
   n8n:
     container_name: n8n
-    image: n8nio/n8n
+    image: n8nio/n8n:latest
     restart: always
     ports:
       - "5678:5678"
     environment:
-      - N8N_HOST=${DOMAIN}
+      - N8N_HOST=n8n.zalux.vn
       - N8N_PORT=5678
       - N8N_PROTOCOL=https
       - NODE_ENV=production
-      - WEBHOOK_URL=https://${DOMAIN}
+      - WEBHOOK_URL=https://n8n.zalux.vn
       - GENERIC_TIMEZONE=Asia/Ho_Chi_Minh
       - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
       - N8N_BINARY_DATA_STORAGE=/home/node/.n8n/binaryData
@@ -76,6 +76,7 @@ services:
       - /home/n8n:/home/node/.n8n
       - /home/n8n/binaryData:/home/node/.n8n/binaryData
       - /home/node:/home/node
+      - /home/n8n:/root/.n8n
     depends_on:
       - redis
     networks:
@@ -95,8 +96,8 @@ services:
     image: caddy:2
     restart: always
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
+      - "8443:443"
     volumes:
       - /home/n8n/Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
