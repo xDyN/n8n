@@ -57,11 +57,11 @@ services:
     ports:
       - "5678:5678"
     environment:
-      - N8N_HOST=n8n.zalux.vn
+      - N8N_HOST=${DOMAIN}
       - N8N_PORT=5678
       - N8N_PROTOCOL=https
       - NODE_ENV=production
-      - WEBHOOK_URL=https://n8n.zalux.vn
+      - WEBHOOK_URL=https://${DOMAIN}
       - GENERIC_TIMEZONE=Asia/Ho_Chi_Minh
       - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
       - N8N_BINARY_DATA_STORAGE=/home/node/.n8n/binaryData
@@ -71,6 +71,13 @@ services:
       - N8N_REDIS_PORT=6379
       - N8N_REDIS_PASSWORD=yourpassword
       - N8N_SECURE_COOKIE=false
+      # Cấu hình kết nối PostgreSQL
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=n8npassword
     user: "root"
     volumes:
       - /home/n8n:/home/node/.n8n
@@ -79,6 +86,22 @@ services:
       - /home/n8n:/root/.n8n
     depends_on:
       - redis
+      - postgres
+    networks:
+      - n8n_network
+
+  postgres:
+    container_name: postgres
+    image: postgres:16
+    restart: always
+    environment:
+      - POSTGRES_USER=n8n
+      - POSTGRES_PASSWORD=n8npassword
+      - POSTGRES_DB=n8n
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - n8n_network
 
@@ -114,6 +137,7 @@ networks:
 volumes:
   caddy_data:
   caddy_config:
+  postgres_data:
 EOF
 
 # Tạo file Caddyfile
